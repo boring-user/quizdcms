@@ -14,9 +14,15 @@ import android.widget.Toast;
 
 
 import com.example.vedantiladda.quiz.Navigation_Activity;
+import com.example.vedantiladda.quiz.QuizMaster.QuizMasterActivity;
 import com.example.vedantiladda.quiz.R;
 import com.example.vedantiladda.quiz.dto.UserDTO;
 import com.example.vedantiladda.quiz.dto.UserLogin;
+import com.example.vedantiladda.quiz.user.UserMain;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.util.List;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
@@ -28,8 +34,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class LoginActivity extends AppCompatActivity {
 
     private Retrofit retrofit;
-    private String url = "http://10.177.2.200:8080/";
-    private String username;
+    private String url = "http://10.177.2.201:8082/";
+    private List<String> username;
 
     public boolean isValidEmailAddress2(String email) {
         String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
@@ -37,6 +43,8 @@ public class LoginActivity extends AppCompatActivity {
         java.util.regex.Matcher m = p.matcher(email);
         return m.matches();
     }
+
+
 
 
     @Override
@@ -51,19 +59,39 @@ public class LoginActivity extends AppCompatActivity {
 
 
         OkHttpClient client = new OkHttpClient.Builder().build();
-
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
         final Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(url)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(client)
                 .build();
+        final     SharedPreferences sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
+        if(sharedPreferences.getString("Role","ds").equals("User")){
+            Intent intent = new Intent(this,UserMain.class);
+            startActivity(intent);
+            finish();
+
+        }
+        else if(sharedPreferences.getString("Role","ds").equals("Admin")){
+            Intent intent = new Intent(this,Navigation_Activity.class);
+            startActivity(intent);
+            finish();
+
+        }else if(sharedPreferences.getString("Role","ds").equals("QuizMaster")){
+            Intent intent = new Intent(this,QuizMasterActivity.class);
+            startActivity(intent);
+            finish();
+
+        }
 
         Button login_button = findViewById(R.id.login_button);
 
         login_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String editTextValue = editText.getText().toString();
+                final String editTextValue = editText.getText().toString();
                 String editTextValue9 = editText9.getText().toString();
 
 
@@ -84,11 +112,11 @@ public class LoginActivity extends AppCompatActivity {
                 userLogin.setPassword(editText9.getText().toString());
 
                 final PostAll login = retrofit.create(PostAll.class);
-                Call<String> loginCall = login.loginDetails(userLogin);
+                Call<List<String>> loginCall = login.loginDetails(userLogin);
 
-                loginCall.enqueue(new Callback<String>() {
+                loginCall.enqueue(new Callback<List<String>>() {
                     @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
+                    public void onResponse(Call<List<String>> call, Response<List<String>> response) {
 
                         if(response.body() == null){
                             Toast.makeText(getApplicationContext(), "please enter valid credentials!", Toast.LENGTH_SHORT).show();
@@ -98,19 +126,33 @@ public class LoginActivity extends AppCompatActivity {
                             username = response.body();
                             SharedPreferences sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString("userName", username);
+                            editor.putString("userId", username.get(0));
+                            editor.putString("userName", username.get(1));
+                            editor.putString("Email",editTextValue );
+                            editor.putString("Role",username.get(2));
                             editor.apply();
 
                             Toast.makeText(getApplicationContext(), "successfully logged in!", Toast.LENGTH_SHORT).show();
+                            if(username.get(2).equals("Admin")){
                             Intent i = new Intent(LoginActivity.this, Navigation_Activity.class);
                             startActivity(i);
-                            finish();
+                            finish();}
+                            else if(username.get(2).equals("User")){
+                                Intent i = new Intent(LoginActivity.this, UserMain.class);
+                                startActivity(i);
+                                finish();
+                            }else if(username.get(2).equals("QuizMaster")){
+                                Intent i = new Intent(LoginActivity.this, QuizMasterActivity.class);
+                                startActivity(i);
+                                finish();
+                            }
+
                         }
 
                     }
 
                     @Override
-                    public void onFailure(Call<String> call, Throwable t) {
+                    public void onFailure(Call<List<String>> call, Throwable t) {
                         Log.d("hey",call.request().body().toString());
 
                         Log.d("hey",t.getMessage());

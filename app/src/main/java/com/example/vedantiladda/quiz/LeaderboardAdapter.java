@@ -3,6 +3,7 @@ package com.example.vedantiladda.quiz;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,9 +37,8 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
     public void onBindViewHolder(@NonNull final LeaderboardAdapter.LeaderboardHolder holder, int position) {
         final OverallDTO overallDTO = overallDTOS.get(position);
         holder.username.setText(overallDTO.getUserId());
-        holder.points.setText(String.valueOf(overallDTO.getOverAllPoints()));
-        holder.rank.setText(String.valueOf(overallDTO.getRank()))
-        ;
+        holder.points.setText(String.valueOf(overallDTO.getFinalPoints()));
+        holder.rank.setText(String.valueOf(overallDTO.getRank()));
         holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

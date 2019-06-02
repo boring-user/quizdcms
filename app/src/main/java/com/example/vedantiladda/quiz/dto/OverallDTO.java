@@ -1,10 +1,46 @@
 package com.example.vedantiladda.quiz.dto;
 
+import java.math.BigInteger;
+
 public class OverallDTO {
     private String userId;
-    private int overAllPoints;
+    private BigInteger finalPoints;
+    private BigInteger rank;
+    private Integer pointInt;
+    private String finalPointsString;
 
-    private int rank;
+    public String getFinalPointsString() {
+        return finalPointsString;
+    }
+
+    public void setFinalPointsString(String finalPointsString) {
+        this.finalPointsString = finalPointsString;
+    }
+
+    public Integer getPointInt() {
+        return pointInt;
+    }
+
+    public void setPointInt(Integer pointInt) {
+        this.pointInt = pointInt;
+    }
+
+    @Override
+    public String toString() {
+        return "LeaderBoard{" +
+                "userId='" + userId + '\'' +
+                ", finalPoints='" + finalPoints + '\'' +
+                '}';
+    }
+
+
+    public BigInteger getRank() {
+        return rank;
+    }
+
+    public void setRank(BigInteger rank) {
+        this.rank = rank;
+    }
 
     public String getUserId() {
         return userId;
@@ -14,28 +50,11 @@ public class OverallDTO {
         this.userId = userId;
     }
 
-    public int getOverAllPoints() {
-        return overAllPoints;
+    public BigInteger getFinalPoints() {
+        return finalPoints;
     }
 
-    public void setOverAllPoints(int overAllPoints) {
-        this.overAllPoints = overAllPoints;
-    }
-
-    public int getRank() {
-        return rank;
-    }
-
-    public void setRank(int rank) {
-        this.rank = rank;
-    }
-
-    @Override
-    public String toString() {
-        return "OverallDTO{" +
-                "userId='" + userId + '\'' +
-                ", overAllPoints=" + overAllPoints +
-                ", rank=" + rank +
-                '}';
+    public void setFinalPoints(BigInteger finalPoints) {
+        this.finalPoints = finalPoints;
     }
 }
